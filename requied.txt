@@ -1,0 +1,88 @@
+FindOnlineJobs - Requirements and Run Checklist
+================================================
+
+PROJECT STATUS
+--------------
+- The project contains a React/Vite frontend and an Express/Mongoose backend.
+- Frontend production build was checked with "npm run build" and succeeds.
+- Backend entry syntax was checked with "node --check index.js" and passes.
+- Runtime connection to MongoDB and Cloudinary cannot be verified until valid credentials are configured.
+- There is no configured test suite: the backend "test" script currently reports that no tests are specified.
+- The build reports non-blocking warnings for an outdated Browserslist database and a large JavaScript bundle.
+
+REQUIRED SOFTWARE
+-----------------
+- Node.js 18 or newer (Node.js 20 LTS is recommended).
+- npm, installed with Node.js.
+- Internet access to install packages if node_modules is absent.
+- A MongoDB database, such as MongoDB Atlas, with a valid connection string.
+- A Cloudinary account for profile/resume and company image uploads.
+
+BACKEND REQUIREMENTS
+--------------------
+1. Open a terminal in the backend folder:
+   cd findonlinejobs\backend
+
+2. Install dependencies if needed:
+   npm install
+
+3. Create a file named .env in findonlinejobs\backend with:
+   PORT=8000
+   MONGO_URI=your_mongodb_connection_string
+   SECRET_KEY=your_long_random_jwt_secret
+   CLOUD_NAME=your_cloudinary_cloud_name
+   API_KEY=your_cloudinary_api_key
+   API_SECRET=your_cloudinary_api_secret
+
+   Keep real credentials private; do not commit the .env file.
+   Ensure the MongoDB database user/password and network access allow this
+   machine to connect.
+   Cloudinary credentials are required for upload features.
+
+4. Start the backend:
+   npm run dev
+   (Production-style start: npm start)
+
+   The API listens on port 8000 by default. PORT can be changed in .env.
+
+FRONTEND REQUIREMENTS
+---------------------
+1. Open a second terminal in the frontend folder:
+   cd findonlinejobs\frontend
+
+2. Install dependencies if needed:
+   npm install
+
+3. The frontend API base URL defaults to:
+   http://localhost:8000/api/v1
+   This matches the backend's default port and API prefix. No frontend .env
+   file is required for this local default.
+
+   To use another backend address, create findonlinejobs\frontend\.env and set:
+   VITE_API_END_POINT=http://localhost:8000/api/v1
+   Replace the URL with the actual API base URL when it differs.
+
+4. Start the frontend:
+   npm run dev
+
+   Open the Vite URL shown in the terminal (normally http://localhost:5173).
+   The backend currently permits browser requests from
+   http://localhost:5173; update its CORS origin if the frontend runs elsewhere.
+
+RECOMMENDED START ORDER
+-----------------------
+1. Configure backend/.env.
+2. Start the backend and confirm MongoDB connects successfully.
+3. Start the frontend in a separate terminal.
+4. Register/login and try job search and uploads to verify database and
+   Cloudinary connectivity.
+
+WHAT IS CURRENTLY MISSING
+-------------------------
+- backend/.env is absent: set MONGO_URI and SECRET_KEY before using API
+  database/auth features; set CLOUD_NAME, API_KEY, and API_SECRET for uploads.
+- frontend/.env is absent, but optional because the app uses the local API URL
+  by default.
+- No automated backend tests are configured.
+- For a deployed frontend, configure its API URL and change backend CORS to
+  allow the deployed frontend's exact origin.
