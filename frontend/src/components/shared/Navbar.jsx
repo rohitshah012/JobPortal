@@ -1,201 +1,99 @@
-import React, { useState, useEffect } from 'react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Button } from '../ui/button'
-import { Avatar, AvatarImage } from '../ui/avatar'
-import { LogOut, User2, Menu, X, Sun, Moon } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
-import { USER_API_END_POINT } from '@/utils/constant'
-import { setUser } from '@/redux/authSlice'
-import { toast } from 'sonner'
+import { BriefcaseBusiness, LogOut, Menu, UserRound, X } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import api from "@/services/api";
+import { setUser } from "@/redux/authSlice";
 
 const Navbar = () => {
-    const { user } = useSelector(store => store.auth);
+    const { user } = useSelector((state) => state.auth);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+    const isRecruiter = user?.role === "recruiter";
 
-    useEffect(() => {
-        if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
+    const closeMenu = () => setMenuOpen(false);
+    const logout = async () => {
+        setIsLoggingOut(true);
+        try {
+            const response = await api.get("/user/logout");
+            if (!response.data.success) {
+                throw new Error(response.data.message || "Logout failed.");
+            }
+            dispatch(setUser(null));
+            closeMenu();
+            navigate("/");
+            toast.success(response.data.message);
+        } catch (error) {
+            toast.error(error.message || "Logout failed.");
+        } finally {
+            setIsLoggingOut(false);
         }
-        localStorage.setItem("theme", theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme(theme === "light" ? "dark" : "light");
     };
 
-    const logoutHandler = async () => {
-        try {
-            const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
-            if (res.data.success) {
-                dispatch(setUser(null));
-                navigate("/");
-                toast.success(res.data.message);
-                setMenuOpen(false);
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data?.message || "Logout failed");
-        }
-    }
+    const links = isRecruiter
+        ? [{ to: "/admin/companies", label: "Companies" }, { to: "/admin/jobs", label: "Manage jobs" }]
+        : [{ to: "/", label: "Home" }, { to: "/jobs", label: "Find jobs" }, { to: "/browse", label: "Browse" }];
+
     return (
-        <div className='bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50'>
-            <div className='flex items-center justify-between mx-auto max-w-7xl h-16 px-4'>
-                <div>
-                    <Link to="/"><h1 className='text-2xl font-bold'>FindOnline<span className='text-[#F83002]'>Jobs</span></h1></Link>
-                </div>
-                
-                {/* Desktop Navigation */}
-                <div className='hidden md:flex items-center gap-12'>
-                    <ul className='flex font-medium items-center gap-5'>
-                        {
-                            user && user.role === 'recruiter' ? (
-                                <>
-                                    <li><Link to="/admin/companies" className="hover:text-[#6A38C2] transition-colors">Companies</Link></li>
-                                    <li><Link to="/admin/jobs" className="hover:text-[#6A38C2] transition-colors">Jobs</Link></li>
-                                </>
-                            ) : (
-                                <>
-                                    <li><Link to="/" className="hover:text-[#6A38C2] transition-colors">Home</Link></li>
-                                    <li><Link to="/jobs" className="hover:text-[#6A38C2] transition-colors">Jobs</Link></li>
-                                    <li><Link to="/browse" className="hover:text-[#6A38C2] transition-colors">Browse</Link></li>
-                                </>
-                            )
-                        }
-                    </ul>
-                    {
-                        !user ? (
-                            <div className='flex items-center gap-2'>
-                                <Link to="/login"><Button variant="outline">Login</Button></Link>
-                                <Link to="/signup"><Button className="bg-[#6A38C2] hover:bg-[#5b30a6]">Signup</Button></Link>
-                            </div>
-                        ) : (
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Avatar className="cursor-pointer">
-                                        <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                    </Avatar>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-80">
-                                    <div className=''>
-                                        <div className='flex gap-2 space-y-2'>
-                                            <Avatar className="cursor-pointer">
-                                                <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                            </Avatar>
-                                            <div>
-                                                <h4 className='font-medium'>{user?.fullname}</h4>
-                                                <p className='text-sm text-muted-foreground'>{user?.profile?.bio}</p>
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-col my-2 text-gray-600'>
-                                            {
-                                                user && user.role === 'student' && (
-                                                    <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                                        <User2 />
-                                                        <Button variant="link"> <Link to="/profile">View Profile</Link></Button>
-                                                    </div>
-                                                )
-                                            }
+        <header className="site-header">
+            <div className="nav-inner">
+                <Link className="brand" to="/" onClick={closeMenu} aria-label="FindOnlineJobs home">
+                    <span className="brand-mark"><BriefcaseBusiness size={19} strokeWidth={2.4} /></span>
+                    <span>FindOnline<span className="brand-accent">Jobs</span></span>
+                </Link>
 
-                                            <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                                <LogOut />
-                                                <Button onClick={logoutHandler} variant="link">Logout</Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        )
-                    }
-                    <Button onClick={toggleTheme} variant="ghost" size="icon" className="text-gray-700 mr-2">
-                        {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                    </Button>
-                </div>
+                <nav className={`nav-links ${menuOpen ? "nav-links-open" : ""}`} aria-label="Main navigation">
+                    {links.map((link) => (
+                        <NavLink
+                            key={link.to}
+                            to={link.to}
+                            end={link.to === "/"}
+                            onClick={closeMenu}
+                            className={({ isActive }) => `nav-link${isActive ? " nav-link-active" : ""}`}
+                        >
+                            {link.label}
+                        </NavLink>
+                    ))}
+                </nav>
 
-                {/* Mobile Menu Action Toggle */}
-                <div className='md:hidden flex items-center gap-2'>
-                    {user && (
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Avatar className="cursor-pointer h-8 w-8">
-                                    <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                </Avatar>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80">
-                                <div className=''>
-                                    <div className='flex gap-2 space-y-2'>
-                                        <Avatar className="cursor-pointer">
-                                            <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                        </Avatar>
-                                        <div>
-                                            <h4 className='font-medium'>{user?.fullname}</h4>
-                                            <p className='text-sm text-muted-foreground'>{user?.profile?.bio}</p>
-                                        </div>
-                                    </div>
-                                    <div className='flex flex-col my-2 text-gray-600'>
-                                        {
-                                            user && user.role === 'student' && (
-                                                <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                                    <User2 />
-                                                    <Button variant="link"> <Link to="/profile">View Profile</Link></Button>
-                                                </div>
-                                            )
-                                        }
-
-                                        <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                            <LogOut />
-                                            <Button onClick={logoutHandler} variant="link">Logout</Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+                <div className="nav-actions">
+                    {user ? (
+                        <>
+                            {!isRecruiter && (
+                                <Link className="profile-link" to="/profile" aria-label="View profile">
+                                    {user.profile?.profilePhoto
+                                        ? <img src={user.profile.profilePhoto} alt="" />
+                                        : <UserRound size={18} />}
+                                    <span>{user.fullname?.split(" ")[0] || "Profile"}</span>
+                                </Link>
+                            )}
+                            <button className="nav-logout" onClick={logout} disabled={isLoggingOut} type="button" aria-label="Sign out">
+                                <LogOut size={16} /> <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link className="nav-login" to="/login">Log in</Link>
+                            <Link className="nav-signup" to="/signup">Create account</Link>
+                        </>
                     )}
-                    <Button onClick={toggleTheme} variant="ghost" size="icon" className="text-gray-700">
-                        {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                    </Button>
-                    <Button onClick={() => setMenuOpen(!menuOpen)} variant="ghost" size="icon" className="text-gray-700">
-                        {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                    </Button>
                 </div>
+
+                <button
+                    className="mobile-menu-toggle"
+                    onClick={() => setMenuOpen((isOpen) => !isOpen)}
+                    type="button"
+                    aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+                    aria-expanded={menuOpen}
+                >
+                    {menuOpen ? <X size={22} /> : <Menu size={22} />}
+                </button>
             </div>
+        </header>
+    );
+};
 
-            {/* Mobile Menu Drawer */}
-            {menuOpen && (
-                <div className='md:hidden bg-white border-b border-gray-200 px-4 py-4 space-y-3 shadow-md animate-in slide-in-from-top duration-200'>
-                    <ul className='flex flex-col font-medium gap-3'>
-                        {
-                            user && user.role === 'recruiter' ? (
-                                <>
-                                    <li><Link to="/admin/companies" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">Companies</Link></li>
-                                    <li><Link to="/admin/jobs" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">Jobs</Link></li>
-                                </>
-                            ) : (
-                                <>
-                                    <li><Link to="/" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">Home</Link></li>
-                                    <li><Link to="/jobs" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">Jobs</Link></li>
-                                    <li><Link to="/browse" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">Browse</Link></li>
-                                    {user && <li><Link to="/profile" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-[#6A38C2]">View Profile</Link></li>}
-                                </>
-                            )
-                        }
-                    </ul>
-                    {!user && (
-                        <div className='flex flex-col gap-2 pt-2 border-t border-gray-100'>
-                            <Link to="/login" onClick={() => setMenuOpen(false)}><Button variant="outline" className="w-full">Login</Button></Link>
-                            <Link to="/signup" onClick={() => setMenuOpen(false)}><Button className="bg-[#6A38C2] hover:bg-[#5b30a6] w-full">Signup</Button></Link>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    )
-}
-
-export default Navbar
+export default Navbar;

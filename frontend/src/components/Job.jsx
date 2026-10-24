@@ -1,11 +1,11 @@
-import React from 'react'
+import { notifyApiError } from '@/utils/handleApiError';
 import { Button } from './ui/button'
 import { Bookmark } from 'lucide-react'
 import { Avatar, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
+import api from '@/services/api'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { setUser } from '@/redux/authSlice'
 import { toast } from 'sonner'
@@ -25,7 +25,7 @@ const Job = ({ job }) => {
             return;
         }
         try {
-            const res = await axios.post(`${USER_API_END_POINT}/save/${job?._id}`, {}, { withCredentials: true });
+            const res = await api.post(`${USER_API_END_POINT}/save/${job?._id}`, {}, { withCredentials: true });
             if (res.data.success) {
                 toast.success(res.data.message);
                 let updatedSavedJobs = [...(user.profile.savedJobs || [])];
@@ -44,8 +44,7 @@ const Job = ({ job }) => {
                 dispatch(setUser(updatedUser));
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data?.message || "Something went wrong");
+            notifyApiError(error);
         }
     };
 

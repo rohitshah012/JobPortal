@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import { useEffect, useState } from 'react'
+import Navbar from '../../components/shared/Navbar'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
 import CompaniesTable from './CompaniesTable'
 import { useNavigate } from 'react-router-dom'
 import useGetAllCompanies from '@/hooks/useGetAllCompanies'
@@ -16,7 +16,7 @@ const Companies = () => {
 
     useEffect(()=>{
         dispatch(setSearchCompanyByText(input));
-    },[input]);
+    },[dispatch, input]);
     return (
         <div>
             <Navbar />

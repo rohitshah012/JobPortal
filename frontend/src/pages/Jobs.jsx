@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from './shared/Navbar'
-import FilterCard from './FilterCard'
-import Job from './Job';
+import { useMemo } from 'react'
+import Navbar from '../components/shared/Navbar'
+import FilterCard from '../components/FilterCard'
+import Job from '../components/Job';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import useGetAllJobs from '@/hooks/useGetAllJobs';
 
 // const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -33,21 +34,10 @@ const SkeletonCard = () => (
 );
 
 const Jobs = () => {
-    const { allJobs, searchedQuery, filterLocation, filterIndustry, filterSalary } = useSelector(store => store.job);
-    const [filterJobs, setFilterJobs] = useState(allJobs);
-    const [isLoading, setIsLoading] = useState(true);
+    useGetAllJobs();
+    const { allJobs, searchedQuery, filterLocation, filterIndustry, filterSalary, jobsLoading, jobsError } = useSelector(store => store.job);
 
-    useEffect(() => {
-        if (allJobs.length > 0) {
-            setIsLoading(false);
-        } else {
-            // Add a timeout to stop loading if server has no jobs
-            const timer = setTimeout(() => setIsLoading(false), 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [allJobs]);
-
-    useEffect(() => {
+    const filterJobs = useMemo(() => {
         let filtered = [...allJobs];
 
         if (searchedQuery) {
@@ -62,7 +52,7 @@ const Jobs = () => {
 
         if (filterLocation) {
             filtered = filtered.filter(job => 
-                job.location?.toLowerCase() === filterLocation.toLowerCase()
+                job.location?.toLowerCase().includes(filterLocation.toLowerCase())
             );
         }
 
@@ -91,7 +81,7 @@ const Jobs = () => {
             });
         }
 
-        setFilterJobs(filtered);
+        return filtered;
     }, [allJobs, searchedQuery, filterLocation, filterIndustry, filterSalary]);
 
     return (
@@ -104,9 +94,14 @@ const Jobs = () => {
                     </div>
                     <div className='flex-1 h-[88vh] overflow-y-auto pb-5'>
                         {
-                            isLoading ? (
+                            jobsLoading ? (
                                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                                     {[1, 2, 3, 4, 5, 6].map((n) => <SkeletonCard key={n} />)}
+                                </div>
+                            ) : jobsError && allJobs.length === 0 ? (
+                                <div className='flex flex-col items-center justify-center h-[50vh] text-center'>
+                                    <h2 className='text-xl font-bold text-gray-700 mb-2'>Unable to load jobs</h2>
+                                    <p className='text-gray-500'>{jobsError}</p>
                                 </div>
                             ) : filterJobs.length <= 0 ? (
                                 <div className='flex flex-col items-center justify-center h-[50vh] text-center'>

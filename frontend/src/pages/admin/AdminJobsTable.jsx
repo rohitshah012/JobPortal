@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { notifyApiError } from '@/utils/handleApiError';
+import { useEffect, useState } from 'react'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover'
 import { Edit2, Eye, Trash2, MoreHorizontal } from 'lucide-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '@/services/api'
 import { JOB_API_END_POINT } from '@/utils/constant'
 import { setAllAdminJobs } from '@/redux/jobSlice'
 import { toast } from 'sonner'
@@ -18,24 +19,22 @@ const AdminJobsTable = () => {
     const handleDeleteJob = async (jobId) => {
         if (window.confirm("Are you sure you want to delete this job?")) {
             try {
-                const res = await axios.delete(`${JOB_API_END_POINT}/delete/${jobId}`, { withCredentials: true });
+                const res = await api.delete(`${JOB_API_END_POINT}/delete/${jobId}`, { withCredentials: true });
                 if (res.data.success) {
                     toast.success(res.data.message);
                     dispatch(setAllAdminJobs(allAdminJobs.filter(job => job._id !== jobId)));
                 }
             } catch (error) {
-                console.log(error);
-                toast.error(error.response?.data?.message || "Failed to delete job");
+                notifyApiError(error);
             }
         }
-    };
+    }
 
     useEffect(()=>{ 
-        console.log('called');
         const filteredJobs = allAdminJobs.filter((job)=>{
             if(!searchJobByText){
                 return true;
-            };
+            }
             return job?.title?.toLowerCase().includes(searchJobByText.toLowerCase()) || job?.company?.name?.toLowerCase().includes(searchJobByText.toLowerCase());
 
         });

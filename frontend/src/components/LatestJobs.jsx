@@ -1,22 +1,40 @@
-import React from 'react'
-import LatestJobCards from './LatestJobCards';
-import { useSelector } from 'react-redux'; 
-
-// const randomJobs = [1, 2, 3, 4, 5, 6, 7, 8];
+import { ArrowRight, BriefcaseBusiness } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import LatestJobCard from "./LatestJobCard";
 
 const LatestJobs = () => {
-    const {allJobs} = useSelector(store=>store.job);
-   
-    return (
-        <div className='max-w-7xl mx-auto my-20 px-4'>
-            <h1 className='text-4xl font-bold'><span className='text-[#6A38C2]'>Latest & Top </span> Job Openings</h1>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-5'>
-                {
-                    allJobs.length <= 0 ? <span>No Job Available</span> : allJobs?.slice(0,6).map((job) => <LatestJobCards key={job._id} job={job}/>)
-                }
-            </div>
-        </div>
-    )
-}
+    const { allJobs, jobsError, jobsLoading } = useSelector((state) => state.job);
+    const featuredJobs = allJobs.slice(0, 6);
 
-export default LatestJobs
+    return (
+        <section className="featured-section" id="latest-jobs">
+            <div className="section-heading">
+                <div>
+                    <span className="section-eyebrow">Fresh opportunities</span>
+                    <h2>Roles worth a closer look</h2>
+                    <p>Explore some of the latest opportunities from our hiring teams.</p>
+                </div>
+                <Link className="view-all-link" to="/jobs">View all jobs <ArrowRight size={17} /></Link>
+            </div>
+
+            {jobsLoading && featuredJobs.length === 0 ? (
+                <div className="jobs-empty-state"><span className="loading-spinner" /> Finding the latest roles...</div>
+            ) : jobsError && featuredJobs.length === 0 ? (
+                <div className="jobs-empty-state jobs-error-state">{jobsError}</div>
+            ) : featuredJobs.length === 0 ? (
+                <div className="jobs-empty-state">
+                    <BriefcaseBusiness size={25} />
+                    <strong>New opportunities are on the way.</strong>
+                    <span>Check back soon or browse all available roles.</span>
+                </div>
+            ) : (
+                <div className="featured-grid">
+                    {featuredJobs.map((job) => <LatestJobCard key={job._id} job={job} />)}
+                </div>
+            )}
+        </section>
+    );
+};
+
+export default LatestJobs;

@@ -4,6 +4,8 @@ const jobSlice = createSlice({
     name:"job",
     initialState:{
         allJobs:[],
+        jobsLoading:false,
+        jobsError:null,
         allAdminJobs:[],
         singleJob:null, 
         searchJobByText:"",
@@ -17,6 +19,12 @@ const jobSlice = createSlice({
         // actions
         setAllJobs:(state,action) => {
             state.allJobs = action.payload;
+        },
+        setJobsLoading:(state,action) => {
+            state.jobsLoading = action.payload;
+        },
+        setJobsError:(state,action) => {
+            state.jobsError = action.payload;
         },
         setSingleJob:(state,action) => {
             state.singleJob = action.payload;
@@ -52,6 +60,8 @@ const jobSlice = createSlice({
 });
 export const {
     setAllJobs, 
+    setJobsLoading,
+    setJobsError,
     setSingleJob, 
     setAllAdminJobs,
     setSearchJobByText, 

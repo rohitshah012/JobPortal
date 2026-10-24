@@ -1,17 +1,16 @@
-import React, { useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import { useState } from 'react'
+import Navbar from '../../components/shared/Navbar'
+import { Label } from '../../components/ui/label'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
 import { useSelector } from 'react-redux'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import axios from 'axios'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import api from '@/services/api'
 import { JOB_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
-
-const companyArray = [];
+import { notifyApiError } from '@/utils/handleApiError'
 
 const PostJob = () => {
     const [input, setInput] = useState({
@@ -43,7 +42,7 @@ const PostJob = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post(`${JOB_API_END_POINT}/post`, input,{
+            const res = await api.post(`${JOB_API_END_POINT}/post`, input,{
                 headers:{
                     'Content-Type':'application/json'
                 },
@@ -54,7 +53,7 @@ const PostJob = () => {
                 navigate("/admin/jobs");
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Something went wrong");
+            notifyApiError(error);
         } finally{
             setLoading(false);
         }

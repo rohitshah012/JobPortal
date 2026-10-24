@@ -1,151 +1,89 @@
 # FindOnlineJobs
 
-## 🚀 Overview
+FindOnlineJobs is a React and Express job portal for candidates and recruiters. The frontend uses a responsive blue-and-white interface, Redux Toolkit for shared state, and a versioned REST API backed by MongoDB.
 
-FindOnlineJobs is a full-stack job portal platform that connects job seekers with employers. Users can discover remote, freelance, internship, and full-time job opportunities, while recruiters can post jobs and manage applications efficiently.
+## Requirements
 
----
+- Node.js 18 or newer
+- npm
+- MongoDB connection string
+- Cloudinary credentials for profile and company uploads
 
-## ✨ Features
+## Run locally
 
-### Job Seekers
+1. Configure the backend:
 
-* User registration and authentication
-* Advanced job search and filtering
-* Save favorite jobs
-* Apply for jobs online
-* Manage profile and resume
-* Track application status
+   ```powershell
+   cd backend
+   Copy-Item .env.example .env
+   ```
 
-### Employers
+   Set `MONGO_URI`, `SECRET_KEY`, and the Cloudinary values in `backend/.env`.
 
-* Recruiter dashboard
-* Post, edit, and delete job listings
-* Manage job applications
-* View candidate profiles
+2. Start the API:
 
-### Admin
+   ```powershell
+   npm install
+   npm run dev
+   ```
 
-* User management
-* Job moderation
-* Platform analytics
-* Role-based access control
+3. Configure and start the frontend in another terminal:
 
----
+   ```powershell
+   cd frontend
+   Copy-Item .env.example .env
+   npm install
+   npm run dev
+   ```
 
-## 🛠 Tech Stack
+   Set `VITE_API_BASE_URL` if the API is not at `http://localhost:8000/api/v1`.
 
-### Frontend
-
-* React.js
-* Redux Toolkit
-* React Router DOM
-* Axios
-* Tailwind CSS
-* Vite
-
-### Backend
-
-* Node.js
-* Express.js
-
-### Database
-
-* MongoDB Atlas
-* Mongoose ODM
-
-### Authentication & Security
-
-* JWT (JSON Web Token)
-* bcrypt.js
-* Cookie Parser
-* CORS
-
-### Media & File Management
-
-* Cloudinary
-* Multer
-
-### State Management
-
-* Redux Toolkit
-* React Redux
-
-### Development Tools
-
-* Git & GitHub
-* Postman
-* npm
-
----
-
-## 📂 Project Structure
+## Project structure
 
 ```text
-FindOnlineJobs/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── redux/
-│   │   ├── hooks/
-│   │   ├── utils/
-│   │   └── assets/
-│   └── package.json
-│
+findonlinejobs/
 ├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── utils/
-│   └── package.json
-│
-├── README.md
-└── .gitignore
+│   ├── config/          # Environment configuration
+│   ├── controllers/     # HTTP handlers and request validation
+│   ├── middlewares/     # Authentication, uploads, and shared error handling
+│   ├── models/          # Mongoose schemas
+│   ├── routes/          # Versioned REST route modules
+│   ├── utils/           # Database and upload helpers
+│   ├── app.js           # Express application and middleware
+│   └── index.js         # Database connection and server startup
+└── frontend/
+    └── src/
+        ├── components/  # Reusable presentation and UI components
+        ├── config/      # Frontend configuration
+        ├── hooks/       # Reusable React hooks
+        ├── pages/       # Route-level views
+        ├── redux/       # Shared application state
+        ├── routing/     # Route access control
+        ├── services/    # API client and feature API functions
+        └── utils/       # Shared frontend helpers
 ```
 
----
+## API
 
-## 🔑 Key Technologies
+All endpoints are mounted under `/api/v1`:
 
-| Technology    | Purpose                 |
-| ------------- | ----------------------- |
-| React.js      | Frontend UI Development |
-| Redux Toolkit | Global State Management |
-| Axios         | API Communication       |
-| Tailwind CSS  | Responsive Styling      |
-| Node.js       | Backend Runtime         |
-| Express.js    | REST API Development    |
-| MongoDB       | Database                |
-| Mongoose      | MongoDB ODM             |
-| JWT           | Authentication          |
-| Cloudinary    | Resume & Image Storage  |
-| Multer        | File Upload Handling    |
+| Area | Routes |
+| --- | --- |
+| Users | `/user` |
+| Companies | `/company` |
+| Jobs | `/job` |
+| Applications | `/application` |
 
----
+The API returns JSON with a `success` flag and a user-readable `message` for errors. Async controller failures and unknown routes are handled by shared Express middleware.
 
-## 🌟 Future Enhancements
+## Environment variables
 
-* AI-powered job recommendations
-* Resume parsing using AI
-* Real-time chat between recruiters and candidates
-* Job alerts and notifications
-* Company reviews and ratings
-* Mobile application
-* Advanced analytics dashboard
+Backend variables are documented in [backend/.env.example](./backend/.env.example). Frontend variables are documented in [frontend/.env.example](./frontend/.env.example). Do not commit `.env` files or production credentials.
 
----
+## Validation
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-**FindOnlineJobs Team**
-
-Empowering professionals to discover opportunities and helping companies find the right talent..
+```powershell
+cd frontend
+npm run lint
+npm run build
+```

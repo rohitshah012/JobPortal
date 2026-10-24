@@ -1,41 +1,90 @@
-import React, { useState } from 'react'
-import { Button } from './ui/button'
-import { Search } from 'lucide-react'
-import { useDispatch } from 'react-redux';
-import { setSearchedQuery } from '@/redux/jobSlice';
-import { useNavigate } from 'react-router-dom';
+import { ArrowRight, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setFilterLocation, setSearchedQuery } from "@/redux/jobSlice";
 
 const HeroSection = () => {
     const [query, setQuery] = useState("");
+    const [location, setLocation] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { allJobs } = useSelector((state) => state.job);
+    const companyCount = new Set(allJobs.map((job) => job.company?._id).filter(Boolean)).size;
 
-    const searchJobHandler = () => {
-        dispatch(setSearchedQuery(query));
-        navigate("/browse");
-    }
+    const searchJobs = (event) => {
+        event.preventDefault();
+        dispatch(setSearchedQuery(query.trim()));
+        dispatch(setFilterLocation(location.trim()));
+        navigate("/jobs");
+    };
 
     return (
-        <div className='text-center'>
-            <div className='flex flex-col gap-5 my-10 px-4'>
-                <span className=' mx-auto px-4 py-2 rounded-full bg-gray-100 text-[#F83002] font-medium'>No. 1 Job Hunt Website</span>
-                <h1 className='text-5xl font-bold'>Search, Apply & <br /> Get Your <span className='text-[#6A38C2]'>Dream Jobs</span></h1>
-                <p className='text-gray-500 max-w-xl mx-auto'>Explore thousands of job opportunities from top companies. Search, apply, and land your next career-defining role with ease.</p>
-                <div className='flex w-[90%] md:w-[40%] shadow-lg border border-gray-200 pl-3 rounded-full items-center gap-4 mx-auto bg-white'>
-                    <input
-                        type="text"
-                        placeholder='Find your dream jobs'
-                        onChange={(e) => setQuery(e.target.value)}
-                        className='outline-none border-none w-full px-2 py-3 text-sm text-gray-700 rounded-l-full'
+        <section className="hero-section">
+            <div className="hero-glow hero-glow-one" aria-hidden="true" />
+            <div className="hero-glow hero-glow-two" aria-hidden="true" />
+            <div className="hero-content">
+                <div className="hero-copy">
+                    <span className="eyebrow"><Sparkles size={15} /> A clearer path to your next role</span>
+                    <h1>Find work that<br />moves you <span>forward.</span></h1>
+                    <p className="hero-description">
+                        Explore opportunities from growing teams and established companies.
+                        Your next chapter starts with the right search.
+                    </p>
 
-                    />
-                    <Button onClick={searchJobHandler} className="rounded-r-full bg-[#6A38C2] hover:bg-[#5b30a6] h-full p-4">
-                        <Search className='h-5 w-5' />
-                    </Button>
+                    <form className="job-search-form" onSubmit={searchJobs}>
+                        <label className="search-field">
+                            <Search size={19} aria-hidden="true" />
+                            <span className="sr-only">Job title or skill</span>
+                            <input
+                                value={query}
+                                onChange={(event) => setQuery(event.target.value)}
+                                placeholder="Job title, skill or company"
+                            />
+                        </label>
+                        <span className="search-divider" aria-hidden="true" />
+                        <label className="search-field location-field">
+                            <MapPin size={19} aria-hidden="true" />
+                            <span className="sr-only">Location</span>
+                            <input
+                                value={location}
+                                onChange={(event) => setLocation(event.target.value)}
+                                placeholder="City or remote"
+                            />
+                        </label>
+                        <button className="search-submit" type="submit">
+                            Find jobs <ArrowRight size={17} />
+                        </button>
+                    </form>
+
+                    <div className="hero-trust">
+                        <span><ShieldCheck size={16} /> Curated opportunities</span>
+                        <span><strong>{allJobs.length.toLocaleString()}</strong> open roles</span>
+                        <span><strong>{companyCount.toLocaleString()}</strong> hiring companies</span>
+                    </div>
                 </div>
-            </div>
-        </div>
-    )
-}
 
-export default HeroSection
+                <aside className="hero-aside" aria-label="Career search highlight">
+                    <div className="aside-topline"><span className="live-dot" /> Your next opportunity</div>
+                    <div className="career-art" aria-hidden="true">
+                        <div className="orbit orbit-one" />
+                        <div className="orbit orbit-two" />
+                        <div className="career-orb"><Search size={30} /></div>
+                        <span className="career-star star-one">✦</span>
+                        <span className="career-star star-two">✦</span>
+                        <span className="career-dot dot-one" />
+                        <span className="career-dot dot-two" />
+                    </div>
+                    <p className="aside-kicker">Make your next move count</p>
+                    <h2>Good work starts with a great fit.</h2>
+                    <p className="aside-copy">Search roles by what matters to you: the work, the place, and the people.</p>
+                    <button className="aside-link" onClick={() => navigate("/jobs")} type="button">
+                        Explore all jobs <ArrowRight size={16} />
+                    </button>
+                </aside>
+            </div>
+        </section>
+    );
+};
+
+export default HeroSection;

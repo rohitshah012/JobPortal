@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Button } from '../ui/button'
+import { notifyApiError } from '@/utils/handleApiError';
+import { useEffect, useState } from 'react'
+import Navbar from '../../components/shared/Navbar'
+import { Button } from '../../components/ui/button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import axios from 'axios'
+import { Label } from '../../components/ui/label'
+import { Input } from '../../components/ui/input'
+import api from '@/services/api'
 import { COMPANY_API_END_POINT } from '@/utils/constant'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -46,7 +47,7 @@ const CompanySetup = () => {
         }
         try {
             setLoading(true);
-            const res = await axios.put(`${COMPANY_API_END_POINT}/update/${params.id}`, formData, {
+            const res = await api.put(`${COMPANY_API_END_POINT}/update/${params.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
@@ -57,8 +58,7 @@ const CompanySetup = () => {
                 navigate("/admin/companies");
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
+            notifyApiError(error);
         } finally {
             setLoading(false);
         }

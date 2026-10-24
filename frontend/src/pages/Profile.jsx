@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import Navbar from './shared/Navbar'
-import { Avatar, AvatarImage } from './ui/avatar'
-import { Button } from './ui/button'
+import { notifyApiError } from '@/utils/handleApiError';
+import { useState, useEffect } from 'react'
+import Navbar from '../components/shared/Navbar'
+import { Avatar, AvatarImage } from '../components/ui/avatar'
+import { Button } from '../components/ui/button'
 import { Contact, Mail, Pen } from 'lucide-react'
-import { Badge } from './ui/badge'
-import { Label } from './ui/label'
-import AppliedJobTable from './AppliedJobTable'
-import UpdateProfileDialog from './UpdateProfileDialog'
+import { Badge } from '../components/ui/badge'
+import { Label } from '../components/ui/label'
+import AppliedJobTable from '../components/AppliedJobTable'
+import UpdateProfileDialog from '../components/UpdateProfileDialog'
 import { useSelector } from 'react-redux'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
-import axios from 'axios'
+import api from '@/services/api'
 import { USER_API_END_POINT } from '@/utils/constant'
-import Job from './Job'
+import Job from '../components/Job'
 
 const Profile = () => {
     useGetAppliedJobs();
@@ -24,18 +25,18 @@ const Profile = () => {
     useEffect(() => {
         const fetchSavedJobs = async () => {
             try {
-                const res = await axios.get(`${USER_API_END_POINT}/saved`, { withCredentials: true });
+                const res = await api.get(`${USER_API_END_POINT}/saved`, { withCredentials: true });
                 if (res.data.success) {
                     setSavedJobs(res.data.savedJobs);
                 }
             } catch (error) {
-                console.log(error);
+                notifyApiError(error);
             }
         };
         if (user) {
             fetchSavedJobs();
         }
-    }, [user?.profile?.savedJobs]);
+    }, [user]);
 
     return (
         <div>

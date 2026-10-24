@@ -1,6 +1,7 @@
+import { notifyApiError } from '@/utils/handleApiError';
 import { setAllAppliedJobs } from "@/redux/jobSlice";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
-import axios from "axios"
+import api from '@/services/api'
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 
@@ -10,16 +11,15 @@ const useGetAppliedJobs = () => {
     useEffect(()=>{
         const fetchAppliedJobs = async () => {
             try {
-                const res = await axios.get(`${APPLICATION_API_END_POINT}/get`, {withCredentials:true});
-                console.log(res.data);
+                const res = await api.get(`${APPLICATION_API_END_POINT}/get`, {withCredentials:true});
                 if(res.data.success){
                     dispatch(setAllAppliedJobs(res.data.application));
                 }
             } catch (error) {
-                console.log(error);
+                notifyApiError(error);
             }
         }
         fetchAppliedJobs();
-    },[])
+    },[dispatch])
 };
 export default useGetAppliedJobs;

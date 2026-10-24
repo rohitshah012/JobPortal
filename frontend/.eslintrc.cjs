@@ -13,9 +13,20 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     'react/jsx-no-target-blank': 'off',
+    'react/prop-types': 'off',
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
   },
+  overrides: [
+    {
+      files: ['*.config.js'],
+      env: { node: true },
+    },
+    {
+      files: ['src/components/ui/*.jsx'],
+      rules: { 'react-refresh/only-export-components': 'off' },
+    },
+  ],
 }

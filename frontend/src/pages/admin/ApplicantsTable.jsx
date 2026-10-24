@@ -1,13 +1,13 @@
-import React from 'react'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { MoreHorizontal } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
+import { notifyApiError } from '@/utils/handleApiError'
 import { APPLICATION_API_END_POINT } from '@/utils/constant';
-import axios from 'axios';
+import api from '@/services/api';
 import { updateApplicantStatus } from '@/redux/applicationSlice';
-import { Badge } from '../ui/badge';
+import { Badge } from '../../components/ui/badge';
 
 const shortlistingStatus = ["Accepted", "Rejected"];
 
@@ -17,14 +17,14 @@ const ApplicantsTable = () => {
 
     const statusHandler = async (status, id) => {
         try {
-            axios.defaults.withCredentials = true;
-            const res = await axios.post(`${APPLICATION_API_END_POINT}/status/${id}/update`, { status });
+            api.defaults.withCredentials = true;
+            const res = await api.post(`${APPLICATION_API_END_POINT}/status/${id}/update`, { status });
             if (res.data.success) {
                 toast.success(res.data.message);
                 dispatch(updateApplicantStatus({ applicationId: id, status: status.toLowerCase() }));
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update status");
+            notifyApiError(error);
         }
     }
 

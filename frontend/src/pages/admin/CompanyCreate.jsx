@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import { notifyApiError } from '@/utils/handleApiError';
+import { useState } from 'react'
+import Navbar from '../../components/shared/Navbar'
+import { Label } from '../../components/ui/label'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '@/services/api'
 import { COMPANY_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useDispatch } from 'react-redux'
@@ -16,7 +17,7 @@ const CompanyCreate = () => {
     const dispatch = useDispatch();
     const registerNewCompany = async () => {
         try {
-            const res = await axios.post(`${COMPANY_API_END_POINT}/register`, {companyName}, {
+            const res = await api.post(`${COMPANY_API_END_POINT}/register`, {companyName}, {
                 headers:{
                     'Content-Type':'application/json'
                 },
@@ -29,7 +30,7 @@ const CompanyCreate = () => {
                 navigate(`/admin/companies/${companyId}`);
             }
         } catch (error) {
-            console.log(error);
+            notifyApiError(error);
         }
     }
     return (

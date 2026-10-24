@@ -1,21 +1,23 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Navbar from './components/shared/Navbar'
-import Login from './components/auth/Login'
-import Signup from './components/auth/Signup'
-import Home from './components/Home'
-import Jobs from './components/Jobs'
-import Browse from './components/Browse'
-import Profile from './components/Profile'
-import JobDescription from './components/JobDescription'
-import Companies from './components/admin/Companies'
-import CompanyCreate from './components/admin/CompanyCreate'
-import CompanySetup from './components/admin/CompanySetup'
-import AdminJobs from "./components/admin/AdminJobs";
-import PostJob from './components/admin/PostJob'
-import Applicants from './components/admin/Applicants'
-import ProtectedRoute from './components/admin/ProtectedRoute'
-import JobSetup from './components/admin/JobSetup'
+import { lazy, Suspense } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ProtectedRoute from './routing/ProtectedRoute'
+import "./App.css";
 
+const Login = lazy(() => import("./pages/auth/Login"));
+const Signup = lazy(() => import("./pages/auth/Signup"));
+const Home = lazy(() => import("./pages/Home"));
+const Jobs = lazy(() => import("./pages/Jobs"));
+const Browse = lazy(() => import("./pages/Browse"));
+const Profile = lazy(() => import("./pages/Profile"));
+const JobDescription = lazy(() => import("./pages/JobDescription"));
+const Companies = lazy(() => import("./pages/admin/Companies"));
+const CompanyCreate = lazy(() => import("./pages/admin/CompanyCreate"));
+const CompanySetup = lazy(() => import("./pages/admin/CompanySetup"));
+const AdminJobs = lazy(() => import("./pages/admin/AdminJobs"));
+const PostJob = lazy(() => import("./pages/admin/PostJob"));
+const Applicants = lazy(() => import("./pages/admin/Applicants"));
+const JobSetup = lazy(() => import("./pages/admin/JobSetup"));
+const NotFound = lazy(() => import("./components/NotFound"));
 
 const appRouter = createBrowserRouter([
   {
@@ -75,14 +77,17 @@ const appRouter = createBrowserRouter([
     path:"/admin/jobs/:id/applicants",
     element:<ProtectedRoute><Applicants/></ProtectedRoute> 
   },
-
+  {
+    path: "*",
+    element: <NotFound />
+  },
 ])
 function App() {
 
   return (
-    <div>
+    <Suspense fallback={<div className="page-loading"><span className="loading-spinner" /> Loading FindOnlineJobs...</div>}>
       <RouterProvider router={appRouter} />
-    </div>
+    </Suspense>
   )
 }
 

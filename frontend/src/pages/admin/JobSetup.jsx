@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Button } from '../ui/button'
+import { notifyApiError } from '@/utils/handleApiError';
+import { useEffect, useState } from 'react'
+import Navbar from '../../components/shared/Navbar'
+import { Button } from '../../components/ui/button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import axios from 'axios'
+import { Label } from '../../components/ui/label'
+import { Input } from '../../components/ui/input'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import api from '@/services/api'
 import { JOB_API_END_POINT } from '@/utils/constant'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -43,7 +44,7 @@ const JobSetup = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.put(`${JOB_API_END_POINT}/update/${jobId}`, input, {
+            const res = await api.put(`${JOB_API_END_POINT}/update/${jobId}`, input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -54,8 +55,7 @@ const JobSetup = () => {
                 navigate("/admin/jobs");
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data?.message || "Something went wrong");
+            notifyApiError(error);
         } finally {
             setLoading(false);
         }
@@ -64,7 +64,7 @@ const JobSetup = () => {
     useEffect(() => {
         const fetchSingleJob = async () => {
             try {
-                const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, { withCredentials: true });
+                const res = await api.get(`${JOB_API_END_POINT}/get/${jobId}`, { withCredentials: true });
                 if (res.data.success) {
                     const job = res.data.job;
                     setInput({
@@ -80,7 +80,7 @@ const JobSetup = () => {
                     });
                 }
             } catch (error) {
-                console.log(error);
+                notifyApiError(error);
             }
         }
         fetchSingleJob();
