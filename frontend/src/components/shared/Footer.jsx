@@ -6,14 +6,14 @@ const Footer = () => (
         <div className="footer-inner">
             <Link className="brand footer-brand" to="/">
                 <span className="brand-mark"><BriefcaseBusiness size={19} strokeWidth={2.4} /></span>
-                <span>FindOnline<span className="brand-accent">Jobs</span></span>
+                <span>Job<span className="brand-accent">Portal</span></span>
             </Link>
             <p>Helping good people find work that feels right.</p>
             <div className="footer-links">
                 <Link to="/jobs">Explore jobs <ArrowUpRight size={14} /></Link>
                 <Link to="/signup">Join the community <ArrowUpRight size={14} /></Link>
             </div>
-            <span className="footer-copyright">© {new Date().getFullYear()} FindOnlineJobs</span>
+            <span className="footer-copyright">© {new Date().getFullYear()} JobPortal</span>
         </div>
     </footer>
 );

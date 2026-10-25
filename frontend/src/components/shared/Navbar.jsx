@@ -40,9 +40,9 @@ const Navbar = () => {
     return (
         <header className="site-header">
             <div className="nav-inner">
-                <Link className="brand" to="/" onClick={closeMenu} aria-label="FindOnlineJobs home">
+                <Link className="brand" to="/" onClick={closeMenu} aria-label="JobPortal home">
                     <span className="brand-mark"><BriefcaseBusiness size={19} strokeWidth={2.4} /></span>
-                    <span>FindOnline<span className="brand-accent">Jobs</span></span>
+                    <span>Job<span className="brand-accent">Portal</span></span>
                 </Link>
 
                 <nav className={`nav-links ${menuOpen ? "nav-links-open" : ""}`} aria-label="Main navigation">

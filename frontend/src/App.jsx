@@ -85,7 +85,7 @@ const appRouter = createBrowserRouter([
 function App() {
 
   return (
-    <Suspense fallback={<div className="page-loading"><span className="loading-spinner" /> Loading FindOnlineJobs...</div>}>
+    <Suspense fallback={<div className="page-loading"><span className="loading-spinner" /> Loading JobPortal...</div>}>
       <RouterProvider router={appRouter} />
     </Suspense>
   )
